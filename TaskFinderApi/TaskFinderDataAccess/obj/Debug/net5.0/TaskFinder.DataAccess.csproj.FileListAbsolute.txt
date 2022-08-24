@@ -1,0 +1,12 @@
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\bin\Debug\net5.0\TaskFinder.DataAccess.deps.json
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\bin\Debug\net5.0\TaskFinder.DataAccess.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\bin\Debug\net5.0\ref\TaskFinder.DataAccess.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\bin\Debug\net5.0\TaskFinder.DataAccess.pdb
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.csproj.AssemblyReference.cache
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.AssemblyInfoInputs.cache
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.AssemblyInfo.cs
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.csproj.CoreCompileInputs.cache
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\ref\TaskFinder.DataAccess.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinderDataAccess\obj\Debug\net5.0\TaskFinder.DataAccess.pdb

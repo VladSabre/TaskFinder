@@ -1,0 +1,14 @@
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\bin\Debug\net5.0\TaskFinder.BusinessLogic.deps.json
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\bin\Debug\net5.0\TaskFinder.BusinessLogic.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\bin\Debug\net5.0\ref\TaskFinder.BusinessLogic.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\bin\Debug\net5.0\TaskFinder.BusinessLogic.pdb
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\bin\Debug\net5.0\TaskFinder.DataAccess.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\bin\Debug\net5.0\TaskFinder.DataAccess.pdb
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.csproj.AssemblyReference.cache
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.GeneratedMSBuildEditorConfig.editorconfig
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.AssemblyInfoInputs.cache
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.AssemblyInfo.cs
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.csproj.CoreCompileInputs.cache
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\ref\TaskFinder.BusinessLogic.dll
+D:\Git\TaskFinder\TaskFinderApi\TaskFinder.BusinessLogic\obj\Debug\net5.0\TaskFinder.BusinessLogic.pdb
