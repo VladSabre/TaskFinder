@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,9 +32,15 @@ namespace TaskFinderApi
         {
             services.AddControllers();
 
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AutomaticAuthentication = false;
+            });
+
             services.AddAutoMapper(typeof(ApplicationMappings));
 
-            services.AddDbContext<TaskFinderDbContext>();
+            services.AddDbContext<TaskFinderDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("FinderDb")));
 
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<ISearchService, SearchService>();
@@ -51,7 +58,7 @@ namespace TaskFinderApi
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

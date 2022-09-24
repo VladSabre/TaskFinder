@@ -64,6 +64,16 @@ namespace TaskFinder.Test.BusinessLogic.Services
         }
 
         [Test]
+        public void GetTasks_FilterIsNull_AllTasksReturned()
+        {
+            // Arrange & Act
+            var result = _service.GetTasks(null);
+
+            // Assert
+            Assert.AreEqual(5, result.Count);
+        }
+
+        [Test]
         public void GetTask_ExpectedId_Success()
         {
             // Act
