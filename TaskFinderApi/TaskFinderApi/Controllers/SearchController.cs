@@ -6,7 +6,9 @@ using TaskFinder.BusinessLogic.Services.Interfaces;
 
 namespace TaskFinder.Api.Controllers
 {
-    public class SearchController : Controller
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class SearchController : ControllerBase
     {
         private readonly ISearchService _service;
         private readonly IMapper _mapper;
@@ -17,6 +19,7 @@ namespace TaskFinder.Api.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("{query}")]
         public ActionResult<List<TaskLite>> GetTasks(string query)
         {
             var tasks = _service.Search(query);
