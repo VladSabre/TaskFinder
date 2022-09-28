@@ -2,3 +2,11 @@
     display: flex;
     justify-content: space-between;
 }
+
+.list-item {
+    height: 98px;//123px;
+
+    &__description {
+        text-overflow: ellipsis;
+    }
+}

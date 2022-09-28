@@ -7,7 +7,7 @@ using TaskFinder.BusinessLogic.Services.Interfaces;
 
 namespace TaskFinder.Api.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _service;
