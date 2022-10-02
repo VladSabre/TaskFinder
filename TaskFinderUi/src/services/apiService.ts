@@ -16,7 +16,7 @@ export default class ApiService {
     }
 
     public get<T>(action: string, success: (result: T) => void, params?: URLSearchParams, fail: () => void = this.defaultFail): void {
-        const url = this.baseUrl + AddTrailingSlash(action) + params ?? '';
+        const url = this.baseUrl + AddTrailingSlash(action) + (params ?? '');
         fetch(url)
             .then(res => res.json())
             .then(
@@ -29,7 +29,7 @@ export default class ApiService {
     }
 
     public async getAsync<T>(action: string, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | T> {
-        const url = this.baseUrl + AddTrailingSlash(action) + params ?? '';
+        const url = this.baseUrl + AddTrailingSlash(action) + (params ?? '');
         return fetch(url)
             .then(res => res.json())
             .then(
@@ -42,7 +42,7 @@ export default class ApiService {
     }
 
     public async postAsync<TRequest, TResponse>(action: string, data: TRequest, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | TResponse> {
-        const url = this.baseUrl + AddTrailingSlash(action) + params ?? '';
+        const url = this.baseUrl + AddTrailingSlash(action) + (params ?? '');
         const request = {
             method: 'POST',
             headers: {
@@ -51,7 +51,7 @@ export default class ApiService {
             body: JSON.stringify(data)
         };
         return fetch(url, request)
-            .then(res => res.json())
+            .then(res => res.ok ? res.json() : {} as TResponse)
             .then(
                 (result: TResponse) => result,
                 (error) => {

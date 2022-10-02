@@ -7,6 +7,14 @@
     height: 98px;//123px;
 
     &__description {
+        white-space: nowrap;
+        overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    &_loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import Task from '../../models/Task';
+import { TaskCreationResult } from '../../models/TaskCreationResult';
 import TaskLite from '../../models/TaskLite';
 import TaskService from '../../services/taskService';
 import AddTask from '../addTask/AddTaskComponent';
@@ -12,6 +13,7 @@ import './AppComponent.scss';
 interface AppState {
     addedTasks: TaskLite[];
     isAddTaskDialogShown: boolean;
+    showConnectionErrorMessage: boolean;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -22,7 +24,8 @@ class App extends React.Component<{}, AppState> {
 
         this.state = {
             addedTasks: [],
-            isAddTaskDialogShown: false
+            isAddTaskDialogShown: false,
+            showConnectionErrorMessage: false
         };
 
         this.taskService = new TaskService();
@@ -30,6 +33,7 @@ class App extends React.Component<{}, AppState> {
         this.fireNotification = this.fireNotification.bind(this);
         this.onSearchPerformed = this.onSearchPerformed.bind(this);
         this.onAddClicked = this.onAddClicked.bind(this);
+        this.onImportClicked = this.onImportClicked.bind(this);
         this.onTaskAdded = this.onTaskAdded.bind(this);
         this.onAddTaskDialogClosed = this.onAddTaskDialogClosed.bind(this);
     }
@@ -49,12 +53,27 @@ class App extends React.Component<{}, AppState> {
         this.setState({ isAddTaskDialogShown: true });
     }
 
-    private async onTaskAdded(task: Task): Promise<void> {
-        this.setState(state => ({
-            addedTasks: [task as TaskLite].concat(state.addedTasks)
-        }));
+    private onImportClicked(): void {
+        this.setState({ isAddTaskDialogShown: true });
+    }
 
-        await this.taskService.addTasks(task);
+    private async onTaskAdded(task: Task): Promise<TaskCreationResult | null> {
+        const result = await this.taskService.addTasks(task);
+
+        if (result === null) {
+            this.setState({
+                showConnectionErrorMessage: true
+            });
+            return result;
+        }
+
+        if (result.Id !== null) {
+            this.setState(state => ({
+                addedTasks: [task as TaskLite].concat(state.addedTasks)
+            }));
+        }
+
+        return result;
     }
 
     private onAddTaskDialogClosed(): void {
@@ -73,7 +92,9 @@ class App extends React.Component<{}, AppState> {
     public render(): JSX.Element {
         return (
             <Container>
-                <Header onSearchPerformed={this.onSearchPerformed} onAddClicked={this.onAddClicked} />
+                <Header onSearchPerformed={this.onSearchPerformed}
+                    onAddClicked={this.onAddClicked}
+                    onImportClicked={this.onImportClicked} />
                 {this.renderAddTaskDialog()}
                 <List addedTasks={this.state.addedTasks} fireNotification={this.fireNotification} />
             </Container>

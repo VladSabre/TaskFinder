@@ -3,6 +3,7 @@ import PathService from '../helpers/pathService';
 import TaskLite from '../models/TaskLite';
 import Task from '../models/Task';
 import Filter from '../models/Filter';
+import { TaskCreationResult } from '../models/TaskCreationResult';
 
 export default class TaskService {
     private apiService: ApiService;
@@ -16,10 +17,10 @@ export default class TaskService {
     }
 
     public async getTasks(filter: Filter): Promise<TaskLite[] | null> {
-        const params = new URLSearchParams({
-            take: filter.take.toString(),
-            skip: filter.skip.toString()
-        });
+        // const params = new URLSearchParams({
+        //     take: filter.take.toString(),
+        //     skip: filter.skip.toString()
+        // });
         //return await this.apiService.getAsync<TaskLite[]>(PathService.getTasks, params) || null;
 
         await new Promise(resolve => setTimeout(resolve, 3000));
@@ -73,11 +74,44 @@ export default class TaskService {
     }
 
     public async getTask(taskId: number): Promise<Task | null> {
+        const description = 'You are given an array prices where prices[i] is the price of a given stock on the ith day.\n\n'
+            + 'You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.\n\n'
+            + 'Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.';
+
+        const code = 'public class Solution {\n'
+            + '\tpublic double FindMedianSortedArrays(int[] nums1, int[] nums2) {'
+            + '\t\tvar nums1Count = nums1.Count();'
+            + '\t\tvar nums2Count = nums2.Count();'
+            + '\t\tvar sum1, sum2 = 0;'
+            + '\t}'
+            + '}';
+
+        return Promise.resolve({
+            Id: 5,
+            Name: 'Task 1',
+            Description: description,
+            Examples: [{
+                Id: 1,
+                Index: 1,
+                InputText: 'nums1 = [1,3], nums2 = [2]',
+                OutputText: '2.00000',
+                Explanation: 'merged array = [1,2,3] and median is 2.'
+            },
+            {
+                Id: 2,
+                Index: 2,
+                InputText: 'nums1 = [1,2], nums2 = [3,4]',
+                OutputText: '2.50000',
+                Explanation: 'merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.'
+            }],
+            Code: code
+        });
+
         const params = new URLSearchParams({ taskId: taskId.toString() });
         return await this.apiService.getAsync<Task>(PathService.getTask, params) || null;
     }
 
-    public async addTasks(data: Task): Promise<number | null> {
-        return await this.apiService.postAsync<Task, number>(PathService.addTasks, data) || null;
+    public async addTasks(data: Task): Promise<TaskCreationResult | null> {
+        return await this.apiService.postAsync<Task, TaskCreationResult>(PathService.addTasks, data) || null;
     }
 }

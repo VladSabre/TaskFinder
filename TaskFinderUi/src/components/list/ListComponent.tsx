@@ -5,10 +5,14 @@ import LocalizationService from '../../helpers/localizationService';
 import Filter from '../../models/Filter';
 import TaskLite from '../../models/TaskLite';
 import TaskService from '../../services/taskService';
+import DetailedTask from '../detailedTask/DetailedTaskComponent';
+
+import './ListComponent.scss';
 
 interface ListState {
     page: number;
     tasks: TaskLite[];
+    openedTask: TaskLite | null;
     taskCount: number;
     isLoading: boolean;
 }
@@ -28,13 +32,16 @@ export class List extends React.Component<ListProps, ListState> {
         this.state = {
             page: 0,
             tasks: [],
+            openedTask: null,
             taskCount: 0,
             isLoading: true
         };
 
         this.taskService = new TaskService();
 
-        this.scrollHandler = this.scrollHandler.bind(this);
+        this.onScrolled = this.onScrolled.bind(this);
+        this.onTaskOpened = this.onTaskOpened.bind(this);
+        this.onTaskClosed = this.onTaskClosed.bind(this);
     }
 
     private getFilter(): Filter {
@@ -46,14 +53,17 @@ export class List extends React.Component<ListProps, ListState> {
 
     private renderListElement(task: TaskLite): JSX.Element {
         return (
-            <ListGroup.Item key={task.Id} className="list-item">
+            <ListGroup.Item action
+                key={task.Id}
+                className="list-item"
+                onClick={() => this.onTaskOpened(task)}>
                 <p className="h3">{task.Name}</p>
                 <p className="list-item__description">{task.Description}</p>
             </ListGroup.Item>
         );
     }
 
-    private scrollHandler(event: Event): void {
+    private onScrolled(): void {
         const offSet = 100;
         const isNotAtTheBottom = window.innerHeight + document.documentElement.scrollTop + offSet
             < document.documentElement.offsetHeight;
@@ -67,14 +77,34 @@ export class List extends React.Component<ListProps, ListState> {
         }));
     }
 
+    private onTaskOpened(task: TaskLite): void {
+        this.setState({ openedTask: task });
+    }
+
+    private onTaskClosed(): void {
+        this.setState({ openedTask: null });
+    }
+
+    private renderDetailsDialog(): JSX.Element | null {
+        if (this.state.openedTask === null)
+            return null;
+
+        return (
+            <DetailedTask
+                task={this.state.openedTask}
+                onCloseDialog={this.onTaskClosed}
+            />
+        );
+    }
+
     private renderLoader(): JSX.Element | null {
         if (!this.state.isLoading)
             return null;
 
         return (
-            <ListGroup.Item key={-1}>
+            <ListGroup.Item key={-1} className="list-item list-item_loader">
                 <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{LocalizationService.loading}</span>
                 </Spinner>
             </ListGroup.Item>
         );
@@ -97,11 +127,11 @@ export class List extends React.Component<ListProps, ListState> {
             isLoading: false
         });
 
-        window.addEventListener('scroll', this.scrollHandler);
+        window.addEventListener('scroll', this.onScrolled);
     }
 
     public componentWillUnmount(): void {
-        window.removeEventListener('scroll', this.scrollHandler);
+        window.removeEventListener('scroll', this.onScrolled);
     }
 
     public async componentDidUpdate(_: ListProps, oldState: ListState): Promise<void> {
@@ -129,6 +159,7 @@ export class List extends React.Component<ListProps, ListState> {
             list.push(loader);
 
         return (<>
+            {this.renderDetailsDialog()}
             <ListGroup>
                 {list}
             </ListGroup>

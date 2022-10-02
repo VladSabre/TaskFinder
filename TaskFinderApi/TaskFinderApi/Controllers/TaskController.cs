@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
+using System.Linq;
 using TaskFinder.BusinessLogic.Models;
 using TaskFinder.BusinessLogic.Services.Interfaces;
 
@@ -36,23 +37,14 @@ namespace TaskFinder.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<int> AddTask(Task task)
+        public ActionResult<TaskCreationResult> AddTask([FromBody] Task task)
         {
             var result = _service.AddTask(_mapper.Map<Task>(task));
 
-            if (result.Item1 == null)
-            {
-                var modelState = new ModelStateDictionary();
+            if (result.ValidationResult.Any())
+                return BadRequest(result);
 
-                foreach(var error in result.Item2)
-                {
-                    modelState.AddModelError(error.Key, error.Value);
-                }
-
-                return BadRequest(modelState);
-            }
-
-            return Ok(result.Item1);
+            return Ok(result);
         }
     }
 }

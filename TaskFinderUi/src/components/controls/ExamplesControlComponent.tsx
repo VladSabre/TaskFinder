@@ -7,6 +7,7 @@ import { NewExample } from '../../models/Example';
 
 interface ExamplesControlProps {
     values: NewExample[];
+    isValid: boolean;
     onChange: (values: NewExample[]) => void;
 }
 
@@ -45,19 +46,21 @@ export default function ExamplesControl(props: ExamplesControlProps): JSX.Elemen
     }, [props]);
 
     const example = (example: NewExample, index: number): JSX.Element => (
-        <Form.Group className="mb-3">
-            <InputGroup>
+        <Form.Group className="mb-3" key={index}>
+            <InputGroup hasValidation>
                 <InputGroup.Text>{`${LocalizationService.example} ${index + 1}:`}</InputGroup.Text>
                 <Form.Control
                     type="text"
                     value={example.InputText}
                     placeholder={LocalizationService.exampleInputPlaceholder}
+                    isValid={props.isValid ? undefined : false}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Input)}
                 />
                 <Form.Control
                     type="text"
                     value={example.OutputText}
                     placeholder={LocalizationService.exampleOutputPlaceholder}
+                    isValid={props.isValid ? undefined : false}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Output)}
                 />
                 <Button variant={index === 0 ? 'outline-secondary' : 'outline-danger'}

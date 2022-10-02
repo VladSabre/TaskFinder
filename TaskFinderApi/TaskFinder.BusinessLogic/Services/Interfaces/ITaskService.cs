@@ -9,6 +9,8 @@ namespace TaskFinder.BusinessLogic.Services.Interfaces
 
         Task GetTask(int id);
 
-        (int?, Dictionary<string, string>) AddTask(Task task);
+        TaskCreationResult AddTask(Task task);
+
+        bool RemoveTask(int id);
     }
 }

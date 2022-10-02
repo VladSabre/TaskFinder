@@ -1,16 +1,17 @@
 import React from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form, Modal, Spinner } from 'react-bootstrap';
 
 import LocalizationService from '../../helpers/localizationService';
 import { Example, NewExample } from '../../models/Example';
 import Task from '../../models/Task';
+import { TaskCreationResult } from '../../models/TaskCreationResult';
 import ExamplesControl from '../controls/ExamplesControlComponent';
 import TextFormGroup from '../controls/TextFormGroupComponent';
 
 interface AddTaskProps {
     isShown: boolean;
     onCloseDialog: () => void;
-    onAddTask: (task: Task) => void;
+    onAddTask: (task: Task) => Promise<TaskCreationResult | null>;
 }
 
 interface AddTaskState {
@@ -19,6 +20,8 @@ interface AddTaskState {
     isDescriptionNotValid: boolean;
     areExamplesNotValid: boolean;
     isCodeNotValid: boolean;
+    isLoading: boolean;
+    validationMessages: string[];
 }
 
 export default class AddTask extends React.Component<AddTaskProps, AddTaskState> {
@@ -35,16 +38,19 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             isNameNotValid: false,
             isDescriptionNotValid: false,
             areExamplesNotValid: false,
-            isCodeNotValid: false
+            isCodeNotValid: false,
+            isLoading: false,
+            validationMessages: []
         };
 
         this.onNameChanged = this.onNameChanged.bind(this);
         this.onDescriptionChanged = this.onDescriptionChanged.bind(this);
         this.onExamplesChanged = this.onExamplesChanged.bind(this);
         this.onCodeChanged = this.onCodeChanged.bind(this);
+        this.onTaskSaved = this.onTaskSaved.bind(this);
     }
 
-    private addTask(): void {
+    private async onTaskSaved(): Promise<void> {
         const task = this.state.task;
 
         const isNameNotValid = task.Name.trim() === '';
@@ -67,8 +73,26 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             isCodeNotValid
         });
 
-        if (!isNotValid())
-            this.props.onAddTask(task);
+        if (isNotValid())
+            return;
+
+        this.setState({
+            isLoading: true
+        });
+
+        const result = await this.props.onAddTask(task);
+        this.setState({ isLoading: false });
+
+        if (result === null)
+            return;
+
+        if (result.ValidationResult && result.ValidationResult?.size > 0) {
+            this.setState({
+                validationMessages: Array.from(result.ValidationResult.values())
+            });
+        }
+        else
+            this.props.onCloseDialog();
     }
 
     private onNameChanged(name: string): void {
@@ -111,12 +135,19 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         }));
     }
 
-    private renderFormGroup(label: string, value: string, onChange: (value: string) => void, isTextArea = false): JSX.Element {
+    private renderFormGroup(
+        label: string,
+        value: string,
+        isValid: boolean,
+        onChange: (value: string) => void,
+        isTextArea = false
+    ): JSX.Element {
         return (
             <TextFormGroup
                 label={label}
                 value={value}
                 useTextArea={isTextArea}
+                isValid={isValid}
                 onChange={onChange}
             />
         );
@@ -134,33 +165,47 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         return (
             <ExamplesControl
                 values={examples}
+                isValid={this.state.areExamplesNotValid}
                 onChange={this.onExamplesChanged}
             />
         );
     }
 
+    private renderContent(): JSX.Element {
+        if (this.state.isLoading)
+            return (
+                <Spinner animation="border" role="status">
+                    <span className="visually-hidden">{LocalizationService.loading}</span>
+                </Spinner>
+            );
+
+        return (
+            <Form>
+                {this.renderFormGroup(LocalizationService.nameField,
+                    this.state.task.Name, !this.state.isNameNotValid, this.onNameChanged)}
+                {this.renderFormGroup(LocalizationService.description,
+                    this.state.task.Description, !this.state.isDescriptionNotValid, this.onDescriptionChanged)}
+                {this.renderExamplesControls()}
+                {this.renderFormGroup(LocalizationService.code,
+                    this.state.task.Code, !this.state.isCodeNotValid, this.onCodeChanged, true)}
+            </Form>
+        );
+    }
+
     public render(): JSX.Element {
         return (
-            <Modal show={this.props.isShown} onHide={this.props.onCloseDialog}>
+            <Modal show={this.props.isShown} onHide={this.props.onCloseDialog} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>{LocalizationService.addTask}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
-                        {this.renderFormGroup(LocalizationService.nameField,
-                            this.state.task.Name, this.onNameChanged)}
-                        {this.renderFormGroup(LocalizationService.description,
-                            this.state.task.Description, this.onDescriptionChanged)}
-                        {this.renderExamplesControls()}
-                        {this.renderFormGroup(LocalizationService.code,
-                            this.state.task.Code, this.onCodeChanged, true)}
-                    </Form>
+                    {this.renderContent()}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={this.props.onCloseDialog}>
                         {LocalizationService.close}
                     </Button>
-                    <Button variant="primary" onClick={this.addTask}>
+                    <Button variant="primary" onClick={this.onTaskSaved}>
                         {LocalizationService.add}
                     </Button>
                 </Modal.Footer>
