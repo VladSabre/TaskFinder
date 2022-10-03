@@ -28,6 +28,16 @@ namespace TaskFinder.Test.BusinessLogic.Services
         }
 
         [Test]
+        public void GetTaskCount_Success()
+        {
+            // Act
+            var result = _service.GetTaskCount();
+
+            // Assert
+            Assert.AreEqual(5, result);
+        }
+
+        [Test]
         public void GetTasks_Success()
         {
             // Arrange

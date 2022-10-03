@@ -54,11 +54,11 @@ export class List extends React.Component<ListProps, ListState> {
     private renderListElement(task: TaskLite): JSX.Element {
         return (
             <ListGroup.Item action
-                key={task.Id}
+                key={task.id}
                 className="list-item"
                 onClick={() => this.onTaskOpened(task)}>
-                <p className="h3">{task.Name}</p>
-                <p className="list-item__description">{task.Description}</p>
+                <p className="h3">{task.name}</p>
+                <p className="list-item__description">{task.description}</p>
             </ListGroup.Item>
         );
     }
@@ -153,7 +153,7 @@ export class List extends React.Component<ListProps, ListState> {
     }
 
     public render(): JSX.Element {
-        const list = this.state.tasks.map(x => this.renderListElement(x));
+        const list = this.props.addedTasks.concat(this.state.tasks).map(x => this.renderListElement(x));
         const loader = this.renderLoader();
         if (loader)
             list.push(loader);

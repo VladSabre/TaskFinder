@@ -1,4 +1,4 @@
-import { AddTrailingSlash } from '../helpers/urlHelper';
+import { AddTrailingSlash, RemoveTrailingSlash } from '../helpers/urlHelper';
 import LocalizationService from '../helpers/localizationService';
 
 export default class ApiService {
@@ -16,7 +16,7 @@ export default class ApiService {
     }
 
     public get<T>(action: string, success: (result: T) => void, params?: URLSearchParams, fail: () => void = this.defaultFail): void {
-        const url = this.baseUrl + AddTrailingSlash(action) + (params ?? '');
+        const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
         fetch(url)
             .then(res => res.json())
             .then(
@@ -29,7 +29,7 @@ export default class ApiService {
     }
 
     public async getAsync<T>(action: string, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | T> {
-        const url = this.baseUrl + AddTrailingSlash(action) + (params ?? '');
+        const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
         return fetch(url)
             .then(res => res.json())
             .then(
@@ -42,7 +42,7 @@ export default class ApiService {
     }
 
     public async postAsync<TRequest, TResponse>(action: string, data: TRequest, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | TResponse> {
-        const url = this.baseUrl + AddTrailingSlash(action) + (params ?? '');
+        const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
         const request = {
             method: 'POST',
             headers: {

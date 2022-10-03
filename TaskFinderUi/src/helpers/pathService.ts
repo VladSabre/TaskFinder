@@ -12,6 +12,7 @@ export default class PathService {
     public static taskController = 'Task';
     public static searchController = 'Search';
 
+    public static getTaskCount = 'GetTaskCount';
     public static getTasks = 'GetTasks';
     public static getTask = 'GetTask';
     public static addTasks = 'AddTask';

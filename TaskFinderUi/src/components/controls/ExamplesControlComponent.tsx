@@ -18,24 +18,27 @@ enum ExamplePart {
 
 export default function ExamplesControl(props: ExamplesControlProps): JSX.Element {
     const onChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>, index: number, part: ExamplePart) => {
-        const example = props.values[index];
+        const values = props.values;
+        const example = values[index];
         const newValue = e.target.value;
         switch (part) {
                 case ExamplePart.Input:
-                    example.InputText = newValue;
+                    example.inputText = newValue;
                     break;
                 case ExamplePart.Output:
-                    example.OutputText = newValue;
+                    example.outputText = newValue;
                     break;
         }
 
-        props.onChange(props.values.splice(index, 1, example));
+        values.splice(index, 1, example);
+
+        props.onChange(values);
     }, [props]);
 
     const onAddExample = React.useCallback(() => {
         const newExample: NewExample = {
-            InputText: '',
-            OutputText: ''
+            inputText: '',
+            outputText: ''
         };
         props.onChange(props.values.concat([newExample]));
     }, [props]);
@@ -51,14 +54,14 @@ export default function ExamplesControl(props: ExamplesControlProps): JSX.Elemen
                 <InputGroup.Text>{`${LocalizationService.example} ${index + 1}:`}</InputGroup.Text>
                 <Form.Control
                     type="text"
-                    value={example.InputText}
+                    value={example.inputText}
                     placeholder={LocalizationService.exampleInputPlaceholder}
                     isValid={props.isValid ? undefined : false}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Input)}
                 />
                 <Form.Control
                     type="text"
-                    value={example.OutputText}
+                    value={example.outputText}
                     placeholder={LocalizationService.exampleOutputPlaceholder}
                     isValid={props.isValid ? undefined : false}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Output)}

@@ -1,9 +1,9 @@
 import { Example } from './Example';
 
 export default interface Task {
-    Id?: number;
-    Name: string;
-    Description: string;
-    Examples: Example[];
-    Code: string;
+    id?: number;
+    name: string;
+    description: string;
+    examples: Example[];
+    code: string;
 }

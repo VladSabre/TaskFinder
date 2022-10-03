@@ -1,4 +1,4 @@
-import { AddTrailingSlash } from '../../helpers/urlHelper';
+import { AddTrailingSlash, RemoveTrailingSlash } from '../../helpers/urlHelper';
 
 describe('urlHelper tests', () => {
     it('AddTrailingSlash - trailinig slash is added', () => {
@@ -15,6 +15,22 @@ describe('urlHelper tests', () => {
 
         // Arrange
         expect(result).toBe('some/url/');
+    });
+
+    it('RemoveTrailingSlash - trailinig slash is removed', () => {
+        // Arrange & Act
+        const result = RemoveTrailingSlash('some/url/');
+
+        // Arrange
+        expect(result).toBe('some/url');
+    });
+
+    it('RemoveTrailingSlash - trailinig slash is not removed', () => {
+        // Arrange & Act
+        const result = RemoveTrailingSlash('some/url');
+
+        // Arrange
+        expect(result).toBe('some/url');
     });
 });
 

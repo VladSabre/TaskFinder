@@ -5,6 +5,8 @@ namespace TaskFinder.BusinessLogic.Services.Interfaces
 {
     public interface ITaskService
     {
+        int GetTaskCount();
+
         List<TaskLite> GetTasks(Filter filter);
 
         Task GetTask(int id);

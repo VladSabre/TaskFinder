@@ -19,6 +19,11 @@ namespace TaskFinder.BusinessLogic.Services
             _mapper = mapper;
         }
 
+        public int GetTaskCount()
+        {
+            return _context.Tasks.Count();
+        }
+
         public List<TaskLite> GetTasks(Filter filter)
         {
             var tasks = _context.Tasks

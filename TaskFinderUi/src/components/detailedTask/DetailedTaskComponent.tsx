@@ -15,38 +15,38 @@ interface DetailedTaskProps {
 export default function DetailedTask(props: DetailedTaskProps): JSX.Element {
     const defaultTask: Task = {
         ...props.task,
-        Examples: [],
-        Code: ''
+        examples: [],
+        code: ''
     };
 
     const [task, setTask] = React.useState(defaultTask);
 
     React.useEffect(() => {
         const fetchTask = async () => {
-            setTask(await service.getTask(props.task.Id) ?? task);
+            setTask(await service.getTask(props.task.id) ?? task);
         };
 
         fetchTask();
 
-    }, [props.task.Id]);
+    }, [props.task.id]);
 
     const onEdit = React.useCallback(() => { console.log('on edit'); }, []);
 
     return (
         <Modal show={true} onHide={props.onCloseDialog} size="xl">
             <Modal.Header closeButton>
-                <Modal.Title>{props.task.Name}</Modal.Title>
+                <Modal.Title>{props.task.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Container>
                     <Row>
                         <Col>
-                            <p>{props.task.Description}</p>
-                            <Examples data={task.Examples} />
+                            <p>{props.task.description}</p>
+                            <Examples data={task.examples} />
                         </Col>
                         <Col>
                             <code>
-                                {task.Code}
+                                {task.code}
                             </code>
                         </Col>
                     </Row>

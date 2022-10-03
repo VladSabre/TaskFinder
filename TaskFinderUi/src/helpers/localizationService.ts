@@ -5,7 +5,7 @@ export default class LocalizationService {
     public static search = 'Search...';
     public static loading = 'Loading...';
 
-    public static add = 'Add';
+    public static add = 'Save task';
     public static close = 'Close';
     public static nameField = 'Name';
     public static description = 'Description';
@@ -20,5 +20,5 @@ export default class LocalizationService {
 
     public static input = 'Input:';
     public static output = 'Output:';
-    public static explanation = 'Explanation:';
+    public static explanation = 'explanation:';
 }

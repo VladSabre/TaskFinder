@@ -21,6 +21,14 @@ namespace TaskFinder.Api.Controllers
         }
 
         [HttpGet]
+        public ActionResult<int> GetTaskCount()
+        {
+            var count = _service.GetTaskCount();
+
+            return Ok(count);
+        }
+
+        [HttpGet]
         public ActionResult<List<TaskLite>> GetTasks(Filter filter)
         {
             var tasks = _service.GetTasks(_mapper.Map<Filter>(filter));

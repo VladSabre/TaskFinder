@@ -30,10 +30,10 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
 
         this.state = {
             task: {
-                Name: '',
-                Description: '',
-                Examples: [],
-                Code: ''
+                name: '',
+                description: '',
+                examples: [],
+                code: ''
             },
             isNameNotValid: false,
             isDescriptionNotValid: false,
@@ -53,11 +53,11 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
     private async onTaskSaved(): Promise<void> {
         const task = this.state.task;
 
-        const isNameNotValid = task.Name.trim() === '';
-        const isDescriptionNotValid = task.Description.trim() === '';
-        const isCodeNotValid = task.Code.trim() === '';
-        const areExamplesNotValid = task.Examples.length === 0 ||
-            task.Examples.some(x => x.InputText.trim() === '' || x.OutputText.trim() === '');
+        const isNameNotValid = task.name.trim() === '';
+        const isDescriptionNotValid = task.description.trim() === '';
+        const isCodeNotValid = task.code.trim() === '';
+        const areExamplesNotValid = task.examples.length === 0 ||
+            task.examples.some(x => x.inputText.trim() === '' || x.outputText.trim() === '');
 
         const isNotValid = (): boolean => {
             return isNameNotValid
@@ -86,9 +86,9 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         if (result === null)
             return;
 
-        if (result.ValidationResult && result.ValidationResult?.size > 0) {
+        if (result.validationResult && result.validationResult?.size > 0) {
             this.setState({
-                validationMessages: Array.from(result.ValidationResult.values())
+                validationMessages: Array.from(result.validationResult.values())
             });
         }
         else
@@ -99,7 +99,7 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         this.setState(state => ({
             task: {
                 ...state.task,
-                Name: name
+                name: name
             }
         }));
     }
@@ -108,20 +108,20 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         this.setState(state => ({
             task: {
                 ...state.task,
-                Description: description
+                description: description
             }
         }));
     }
 
     private onExamplesChanged(examples: NewExample[]): void {
         const mapped: Example[] = examples.map((x, index) => {
-            return { ...x, Index: index };
+            return { ...x, index: index };
         });
 
         this.setState(state => ({
             task: {
                 ...state.task,
-                Examples: mapped
+                examples: mapped
             }
         }));
     }
@@ -130,7 +130,7 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         this.setState(state => ({
             task: {
                 ...state.task,
-                Code: code
+                code: code
             }
         }));
     }
@@ -154,12 +154,12 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
     }
 
     private renderExamplesControls(): JSX.Element {
-        const examples = this.state.task.Examples as NewExample[];
+        const examples = this.state.task.examples as NewExample[];
 
         if (examples.length === 0)
             examples.push({
-                InputText: '',
-                OutputText: ''
+                inputText: '',
+                outputText: ''
             });
 
         return (
@@ -182,12 +182,12 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         return (
             <Form>
                 {this.renderFormGroup(LocalizationService.nameField,
-                    this.state.task.Name, !this.state.isNameNotValid, this.onNameChanged)}
+                    this.state.task.name, !this.state.isNameNotValid, this.onNameChanged)}
                 {this.renderFormGroup(LocalizationService.description,
-                    this.state.task.Description, !this.state.isDescriptionNotValid, this.onDescriptionChanged)}
+                    this.state.task.description, !this.state.isDescriptionNotValid, this.onDescriptionChanged)}
                 {this.renderExamplesControls()}
                 {this.renderFormGroup(LocalizationService.code,
-                    this.state.task.Code, !this.state.isCodeNotValid, this.onCodeChanged, true)}
+                    this.state.task.code, !this.state.isCodeNotValid, this.onCodeChanged, true)}
             </Form>
         );
     }
