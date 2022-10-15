@@ -16,9 +16,10 @@ export default class LocalizationService {
 
     public static exampleInputPlaceholder = 's = "42"';
     public static exampleOutputPlaceholder = '42';
+    public static exampleExplanationPlaceholder = '42 is the answer';
     public static addExample = 'Add Example';
 
     public static input = 'Input:';
     public static output = 'Output:';
-    public static explanation = 'explanation:';
+    public static explanation = 'Explanation:';
 }

@@ -7,6 +7,9 @@ import TaskLite from '../../models/TaskLite';
 import TaskService from '../../services/taskService';
 import Examples from './ExamplesComponent';
 
+import './DetailedTaskComponent.scss';
+import Loader from '../loader/LoaderComponent';
+
 interface DetailedTaskProps {
     task: TaskLite;
     onCloseDialog: () => void;
@@ -32,6 +35,18 @@ export default function DetailedTask(props: DetailedTaskProps): JSX.Element {
 
     const onEdit = React.useCallback(() => { console.log('on edit'); }, []);
 
+    const renderCode = React.useCallback(() => {
+        if (task.code === '')
+            return (<Loader />);
+        return (
+            <code>
+                <pre>
+                    {task.code}
+                </pre>
+            </code>
+        );
+    }, [task]);
+
     return (
         <Modal show={true} onHide={props.onCloseDialog} size="xl">
             <Modal.Header closeButton>
@@ -41,13 +56,11 @@ export default function DetailedTask(props: DetailedTaskProps): JSX.Element {
                 <Container>
                     <Row>
                         <Col>
-                            <p>{props.task.description}</p>
+                            <pre className="details-description">{props.task.description}</pre>
                             <Examples data={task.examples} />
                         </Col>
                         <Col>
-                            <code>
-                                {task.code}
-                            </code>
+                            {renderCode()}
                         </Col>
                     </Row>
                 </Container>

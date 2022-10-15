@@ -182,12 +182,20 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         return (
             <Form>
                 {this.renderFormGroup(LocalizationService.nameField,
-                    this.state.task.name, !this.state.isNameNotValid, this.onNameChanged)}
+                    this.state.task.name,
+                    !this.state.isNameNotValid,
+                    this.onNameChanged)}
                 {this.renderFormGroup(LocalizationService.description,
-                    this.state.task.description, !this.state.isDescriptionNotValid, this.onDescriptionChanged)}
+                    this.state.task.description,
+                    !this.state.isDescriptionNotValid,
+                    this.onDescriptionChanged,
+                    true)}
                 {this.renderExamplesControls()}
                 {this.renderFormGroup(LocalizationService.code,
-                    this.state.task.code, !this.state.isCodeNotValid, this.onCodeChanged, true)}
+                    this.state.task.code,
+                    !this.state.isCodeNotValid,
+                    this.onCodeChanged,
+                    true)}
             </Form>
         );
     }

@@ -12,7 +12,7 @@ interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps): JSX.Element {
-    const intervalDuration = 2000;
+    const intervalDuration = 1000;
     let interval: NodeJS.Timer;
 
     const onSearchTyped = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

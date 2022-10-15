@@ -13,7 +13,8 @@ interface ExamplesControlProps {
 
 enum ExamplePart {
     Input,
-    Output
+    Output,
+    Explanation
 }
 
 export default function ExamplesControl(props: ExamplesControlProps): JSX.Element {
@@ -22,12 +23,15 @@ export default function ExamplesControl(props: ExamplesControlProps): JSX.Elemen
         const example = values[index];
         const newValue = e.target.value;
         switch (part) {
-                case ExamplePart.Input:
-                    example.inputText = newValue;
-                    break;
-                case ExamplePart.Output:
-                    example.outputText = newValue;
-                    break;
+            case ExamplePart.Input:
+                example.inputText = newValue;
+                break;
+            case ExamplePart.Output:
+                example.outputText = newValue;
+                break;
+            case ExamplePart.Explanation:
+                example.explanation = newValue;
+                break;
         }
 
         values.splice(index, 1, example);
@@ -65,6 +69,14 @@ export default function ExamplesControl(props: ExamplesControlProps): JSX.Elemen
                     placeholder={LocalizationService.exampleOutputPlaceholder}
                     isValid={props.isValid ? undefined : false}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Output)}
+                />
+                <Form.Control
+                    type="text"
+                    disabled={true} // Remove when Explanation will be available
+                    value={example.explanation}
+                    placeholder={LocalizationService.exampleExplanationPlaceholder}
+                    isValid={props.isValid ? undefined : false}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Explanation)}
                 />
                 <Button variant={index === 0 ? 'outline-secondary' : 'outline-danger'}
                     disabled={index === 0}

@@ -109,6 +109,8 @@ namespace TaskFinder.Test.BusinessLogic.Services
             // Assert
             Assert.AreEqual(TestData.Task3.Id, result.Id);
             Assert.AreEqual(TestData.Task3.Name, result.Name);
+            Assert.AreEqual(TestData.Task3Examples.Count, result.Examples.Count);
+            Assert.AreEqual(TestData.Task3Examples[0].InputText, result.Examples[0].InputText);
         }
 
         [Test]

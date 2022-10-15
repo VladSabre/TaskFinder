@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using TaskFinder.BusinessLogic.Models;
@@ -38,7 +39,9 @@ namespace TaskFinder.BusinessLogic.Services
 
         public Task GetTask(int id)
         {
-            var task = _context.Tasks.Find(id);
+            var task = _context.Tasks
+                .Include(x => x.Examples)
+                .SingleOrDefault(x => x.Id == id);
 
             return _mapper.Map<Task>(task);
         }

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Linq;
 using TaskFinder.BusinessLogic.Models;
@@ -8,7 +7,6 @@ using TaskFinder.BusinessLogic.Services.Interfaces;
 
 namespace TaskFinder.Api.Controllers
 {
-    [Route("[controller]/[action]")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _service;
@@ -33,7 +31,7 @@ namespace TaskFinder.Api.Controllers
         {
             var tasks = _service.GetTasks(_mapper.Map<Filter>(filter));
 
-            return Ok(_mapper.Map<List<TaskLite>>(tasks));
+            return Ok(tasks);
         }
 
         [HttpGet]
@@ -41,13 +39,13 @@ namespace TaskFinder.Api.Controllers
         {
             var task = _service.GetTask(id);
 
-            return Ok(_mapper.Map<Task>(task));
+            return Ok(task);
         }
-
+          
         [HttpPost]
         public ActionResult<TaskCreationResult> AddTask([FromBody] Task task)
         {
-            var result = _service.AddTask(_mapper.Map<Task>(task));
+            var result = _service.AddTask(task);
 
             if (result.ValidationResult.Any())
                 return BadRequest(result);

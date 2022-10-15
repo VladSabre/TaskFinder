@@ -1,11 +1,12 @@
 import React from 'react';
-import { ListGroup, Spinner } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 
 import LocalizationService from '../../helpers/localizationService';
 import Filter from '../../models/Filter';
 import TaskLite from '../../models/TaskLite';
 import TaskService from '../../services/taskService';
 import DetailedTask from '../detailedTask/DetailedTaskComponent';
+import Loader from '../loader/LoaderComponent';
 
 import './ListComponent.scss';
 
@@ -102,10 +103,8 @@ export class List extends React.Component<ListProps, ListState> {
             return null;
 
         return (
-            <ListGroup.Item key={-1} className="list-item list-item_loader">
-                <Spinner animation="border" role="status">
-                    <span className="visually-hidden">{LocalizationService.loading}</span>
-                </Spinner>
+            <ListGroup.Item key={-1} className="list-item">
+                <Loader />
             </ListGroup.Item>
         );
     }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import Header from '../../components/header/HeaderComponent';
 
@@ -38,7 +39,7 @@ describe('Header component tests', () => {
         expect(onImportClicked).toBeCalledTimes(1);
     });
 
-    it('Callback is called on search typed', () => {
+    it('Callback is called on search typed', async () => {
         // Arrange
         const onSearchPerformed = jest.fn<void, [string]>();
         const onAddClicked = jest.fn();
@@ -49,9 +50,13 @@ describe('Header component tests', () => {
             onAddClicked={onAddClicked}
             onImportClicked={onImportClicked} />);
 
-        fireEvent.change(screen.getByRole('textbox'), { target: { value: 'task' } })
+        expect(screen.getByRole('textbox')).toBeInTheDocument();
+
+        //fireEvent.change(screen.getByRole('textbox'), { target: { value: 'task' } });
+        await waitFor(() => userEvent.type(screen.getByRole('textbox'), 'task2'));
 
         // Assert
+        await waitFor(() => expect(onSearchPerformed).toBeCalled());
         expect(onSearchPerformed).toBeCalledTimes(1);
         expect(onSearchPerformed).toBeCalledWith('task');
     });
