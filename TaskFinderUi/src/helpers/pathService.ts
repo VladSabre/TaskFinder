@@ -16,4 +16,5 @@ export default class PathService {
     public static getTasks = 'GetTasks';
     public static getTask = 'GetTask';
     public static addTasks = 'AddTask';
+    public static removeTask = 'RemoveTask';
 }

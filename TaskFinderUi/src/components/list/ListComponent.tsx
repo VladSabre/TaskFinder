@@ -1,5 +1,6 @@
 import React from 'react';
-import { ListGroup } from 'react-bootstrap';
+import { Button, InputGroup, ListGroup } from 'react-bootstrap';
+import { Check, Trash, X } from 'react-bootstrap-icons';
 
 import LocalizationService from '../../helpers/localizationService';
 import Filter from '../../models/Filter';
@@ -16,6 +17,7 @@ interface ListState {
     openedTask: TaskLite | null;
     taskCount: number;
     isLoading: boolean;
+    deletingTaskId: number | null;
 }
 
 interface ListProps {
@@ -35,7 +37,8 @@ export class List extends React.Component<ListProps, ListState> {
             tasks: [],
             openedTask: null,
             taskCount: 0,
-            isLoading: true
+            isLoading: true,
+            deletingTaskId: null
         };
 
         this.taskService = new TaskService();
@@ -58,9 +61,37 @@ export class List extends React.Component<ListProps, ListState> {
                 key={task.id}
                 className="list-item"
                 onClick={() => this.onTaskOpened(task)}>
-                <p className="h3">{task.name}</p>
+                <div className="list-item__header-row">
+                    <p className="h3">{task.name}</p>
+                    {this.renderRemoveButtons(task.id)}
+                </div>
+
                 <p className="list-item__description">{task.description}</p>
             </ListGroup.Item>
+        );
+    }
+
+    private renderRemoveButtons(taskId: number): JSX.Element {
+        if (this.state.deletingTaskId == taskId)
+            return (
+                <div>
+                    <Button className="me-2"
+                        variant="outline-danger"
+                        onClick={(e) => this.confirmRemoveTask(taskId, e)}>
+                        {<Check />}
+                    </Button>
+                    <Button variant="outline-success"
+                        onClick={(e) => this.cancelRemoveTask(e)}>
+                        {<X />}
+                    </Button>
+                </div>
+            );
+
+        return (
+            <Button variant="outline-secondary"
+                onClick={(e) => this.removeTask(taskId, e)}>
+                {<Trash />}
+            </Button>
         );
     }
 
@@ -84,6 +115,36 @@ export class List extends React.Component<ListProps, ListState> {
 
     private onTaskClosed(): void {
         this.setState({ openedTask: null });
+    }
+
+    private removeTask(id: number, event: React.MouseEvent): void {
+        event.stopPropagation();
+
+        this.setState({
+            deletingTaskId: id
+        });
+    }
+
+    private async confirmRemoveTask(id: number, event: React.MouseEvent): Promise<void> {
+        event.stopPropagation();
+
+        const result = await this.taskService.removeTask(id);
+
+        if (result) {
+            this.setState(state => ({
+                tasks: state.tasks.filter(x => x.id !== id),
+                taskCount: state.taskCount - 1,
+                deletingTaskId: null
+            }));
+        }
+    }
+
+    private cancelRemoveTask(event: React.MouseEvent): void {
+        event.stopPropagation();
+
+        this.setState({
+            deletingTaskId: null
+        });
     }
 
     private renderDetailsDialog(): JSX.Element | null {

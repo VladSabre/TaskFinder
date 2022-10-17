@@ -67,7 +67,7 @@ class App extends React.Component<{}, AppState> {
             return result;
         }
 
-        if (result.id !== undefined) {
+        if (result.id !== null) {
             const addedTask: TaskLite = {
                 id: result.id,
                 name: task.name,

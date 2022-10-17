@@ -45,12 +45,15 @@ namespace TaskFinder.Api.Controllers
         [HttpPost]
         public ActionResult<TaskCreationResult> AddTask([FromBody] Task task)
         {
-            var result = _service.AddTask(task);
+            return Ok(_service.AddTask(task));
+        }
 
-            if (result.ValidationResult.Any())
-                return BadRequest(result);
+        [HttpGet]
+        public ActionResult RemoveTask(int id)
+        {
+            var result = _service.RemoveTask(id);
 
-            return Ok(result);
+            return result ? Ok() : BadRequest();
         }
     }
 }

@@ -13,9 +13,9 @@ export default class TaskService {
     }
 
     public async getTaskCount(): Promise<number | null> {
-        const count = await this.apiService.getAsync<number>(PathService.getTaskCount) || 0;
+        const count = await this.apiService.get<number>(PathService.getTaskCount) || 0;
 
-        return Promise.resolve(35 + count);
+        return Promise.resolve(count);
     }
 
     public async getTasks(filter: Filter): Promise<TaskLite[] | null> {
@@ -24,15 +24,20 @@ export default class TaskService {
             skip: filter.skip.toString()
         });
 
-        return await this.apiService.getAsync<TaskLite[]>(PathService.getTasks, params) || [];
+        return await this.apiService.get<TaskLite[]>(PathService.getTasks, params) || [];
     }
 
     public async getTask(id: number): Promise<Task | null> {
         const params = new URLSearchParams({ id: id.toString() });
-        return await this.apiService.getAsync<Task>(PathService.getTask, params) || null;
+        return await this.apiService.get<Task>(PathService.getTask, params) || null;
     }
 
     public async addTasks(data: Task): Promise<TaskCreationResult | null> {
-        return await this.apiService.postAsync<Task, TaskCreationResult>(PathService.addTasks, data) || null;
+        return await this.apiService.post<Task, TaskCreationResult>(PathService.addTasks, data) || null;
+    }
+
+    public async removeTask(id: number): Promise<boolean> {
+        const params = new URLSearchParams({ id: id.toString() });
+        return await this.apiService.getResponsless(PathService.removeTask, params) || false;
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Modal, Spinner } from 'react-bootstrap';
+import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap';
 
 import LocalizationService from '../../helpers/localizationService';
 import { Example, NewExample } from '../../models/Example';
@@ -7,6 +7,8 @@ import Task from '../../models/Task';
 import { TaskCreationResult } from '../../models/TaskCreationResult';
 import ExamplesControl from '../controls/ExamplesControlComponent';
 import TextFormGroup from '../controls/TextFormGroupComponent';
+
+import './AddTaskComponent.scss';
 
 interface AddTaskProps {
     isShown: boolean;
@@ -18,7 +20,7 @@ interface AddTaskState {
     task: Task;
     isNameNotValid: boolean;
     isDescriptionNotValid: boolean;
-    areExamplesNotValid: boolean;
+    areExamplesNotValid: boolean[];
     isCodeNotValid: boolean;
     isLoading: boolean;
     validationMessages: string[];
@@ -28,41 +30,57 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
     public constructor(props: AddTaskProps) {
         super(props);
 
-        this.state = {
-            task: {
-                name: '',
-                description: '',
-                examples: [],
-                code: ''
-            },
-            isNameNotValid: false,
-            isDescriptionNotValid: false,
-            areExamplesNotValid: false,
-            isCodeNotValid: false,
-            isLoading: false,
-            validationMessages: []
-        };
+        this.state = this.getDefaultState();
 
         this.onNameChanged = this.onNameChanged.bind(this);
         this.onDescriptionChanged = this.onDescriptionChanged.bind(this);
         this.onExamplesChanged = this.onExamplesChanged.bind(this);
         this.onCodeChanged = this.onCodeChanged.bind(this);
         this.onTaskSaved = this.onTaskSaved.bind(this);
+        this.discard = this.discard.bind(this);
     }
 
     private async onTaskSaved(): Promise<void> {
+        if (this.isTaskNotValid())
+            return;
+
+        this.setState({
+            isLoading: true
+        });
+
+        const result = await this.props.onAddTask(this.state.task);
+        this.setState({ isLoading: false });
+
+        if (result === null)
+            return;
+
+        if (result.validationResult && Object.keys(result.validationResult).length > 0) {
+            this.setState({
+                validationMessages: Array.from(Object.values(result.validationResult))
+            });
+        }
+        else {
+            this.discard();
+        }
+    }
+
+    private mapExamplesValidation(areExamplesNotValid: boolean[]): boolean {
+        return areExamplesNotValid.length === 0
+            || areExamplesNotValid.some(x => x);
+    }
+
+    private isTaskNotValid(): boolean {
         const task = this.state.task;
 
-        const isNameNotValid = task.name.trim() === '';
-        const isDescriptionNotValid = task.description.trim() === '';
-        const isCodeNotValid = task.code.trim() === '';
-        const areExamplesNotValid = task.examples.length === 0 ||
-            task.examples.some(x => x.inputText.trim() === '' || x.outputText.trim() === '');
+        const isNameNotValid = this.isNameNotValild(task.name);
+        const isDescriptionNotValid = this.isDescriptionNotValild(task.description);
+        const isCodeNotValid = this.isCodeNotValild(task.code);
+        const areExamplesNotValid = this.areExamplesNotValild(task.examples);
 
         const isNotValid = (): boolean => {
             return isNameNotValid
                 || isDescriptionNotValid
-                || areExamplesNotValid
+                || this.mapExamplesValidation(areExamplesNotValid)
                 || isCodeNotValid;
         };
 
@@ -73,26 +91,43 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             isCodeNotValid
         });
 
-        if (isNotValid())
-            return;
+        return isNotValid();
+    }
 
-        this.setState({
-            isLoading: true
-        });
+    private isNameNotValild(name: string): boolean {
+        return name.trim() === '';
+    }
 
-        const result = await this.props.onAddTask(task);
-        this.setState({ isLoading: false });
+    private isDescriptionNotValild(description: string): boolean {
+        return description.trim() === '';
+    }
 
-        if (result === null)
-            return;
+    private isCodeNotValild(code: string): boolean {
+        return code.trim() === '';
+    }
 
-        if (result.validationResult && result.validationResult?.size > 0) {
-            this.setState({
-                validationMessages: Array.from(result.validationResult.values())
-            });
-        }
-        else
-            this.props.onCloseDialog();
+    private areExamplesNotValild(examples: Example[]): boolean[] {
+        if (examples.length === 0)
+            return [];
+
+        return examples.map(x => x.inputText.trim() === '' || x.outputText.trim() === '');
+    }
+
+    private getDefaultState(): AddTaskState {
+        return {
+            task: {
+                name: '',
+                description: '',
+                examples: [],
+                code: ''
+            },
+            isNameNotValid: false,
+            isDescriptionNotValid: false,
+            areExamplesNotValid: [false],
+            isCodeNotValid: false,
+            isLoading: false,
+            validationMessages: []
+        };
     }
 
     private onNameChanged(name: string): void {
@@ -100,7 +135,8 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             task: {
                 ...state.task,
                 name: name
-            }
+            },
+            isNameNotValid: this.isNameNotValild(name)
         }));
     }
 
@@ -109,7 +145,8 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             task: {
                 ...state.task,
                 description: description
-            }
+            },
+            isDescriptionNotValid: this.isDescriptionNotValild(description)
         }));
     }
 
@@ -122,7 +159,10 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             task: {
                 ...state.task,
                 examples: mapped
-            }
+            },
+            areExamplesNotValid: this.mapExamplesValidation(state.areExamplesNotValid)
+                ? this.areExamplesNotValild(mapped)
+                : state.areExamplesNotValid
         }));
     }
 
@@ -131,14 +171,22 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
             task: {
                 ...state.task,
                 code: code
-            }
+            },
+            isCodeNotValid: this.isCodeNotValild(code)
         }));
+    }
+
+    private discard(): void {
+        this.setState({
+            ...this.getDefaultState()
+        });
+        this.props.onCloseDialog();
     }
 
     private renderFormGroup(
         label: string,
         value: string,
-        isValid: boolean,
+        isInvalid: boolean,
         onChange: (value: string) => void,
         isTextArea = false
     ): JSX.Element {
@@ -147,7 +195,7 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
                 label={label}
                 value={value}
                 useTextArea={isTextArea}
-                isValid={isValid}
+                isInvalid={isInvalid}
                 onChange={onChange}
             />
         );
@@ -165,9 +213,22 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
         return (
             <ExamplesControl
                 values={examples}
-                isValid={this.state.areExamplesNotValid}
+                areExamplesInvalid={this.state.areExamplesNotValid}
                 onChange={this.onExamplesChanged}
             />
+        );
+    }
+
+    private renderValidationErrors(): JSX.Element | null {
+        if (this.state.validationMessages.length === 0)
+            return null;
+
+        return (
+            <Alert variant="danger">
+                <ul className="validation-list">
+                    {this.state.validationMessages.map((x, i) => <li key={i}>{x}</li>)}
+                </ul>
+            </Alert>
         );
     }
 
@@ -179,25 +240,26 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
                 </Spinner>
             );
 
-        return (
-            <Form>
+        return (<>
+            {this.renderValidationErrors()}
+            <Form noValidate>
                 {this.renderFormGroup(LocalizationService.nameField,
                     this.state.task.name,
-                    !this.state.isNameNotValid,
+                    this.state.isNameNotValid,
                     this.onNameChanged)}
                 {this.renderFormGroup(LocalizationService.description,
                     this.state.task.description,
-                    !this.state.isDescriptionNotValid,
+                    this.state.isDescriptionNotValid,
                     this.onDescriptionChanged,
                     true)}
                 {this.renderExamplesControls()}
                 {this.renderFormGroup(LocalizationService.code,
                     this.state.task.code,
-                    !this.state.isCodeNotValid,
+                    this.state.isCodeNotValid,
                     this.onCodeChanged,
                     true)}
             </Form>
-        );
+        </>);
     }
 
     public render(): JSX.Element {
@@ -210,8 +272,8 @@ export default class AddTask extends React.Component<AddTaskProps, AddTaskState>
                     {this.renderContent()}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={this.props.onCloseDialog}>
-                        {LocalizationService.close}
+                    <Button variant="secondary" onClick={this.discard}>
+                        {LocalizationService.discardAndClose}
                     </Button>
                     <Button variant="primary" onClick={this.onTaskSaved}>
                         {LocalizationService.add}

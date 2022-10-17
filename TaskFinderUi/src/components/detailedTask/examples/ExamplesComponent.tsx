@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
-import LocalizationService from '../../helpers/localizationService';
-import { Example } from '../../models/Example';
+import LocalizationService from '../../../helpers/localizationService';
+import { Example } from '../../../models/Example';
 
 import './ExamplesComponent.scss';
 

@@ -7,7 +7,7 @@ interface FormGroupProps {
     onChange: (value: string) => void;
     placeholder?: string;
     useTextArea?: boolean;
-    isValid: boolean;
+    isInvalid: boolean;
 }
 
 const defaultProps = {
@@ -25,14 +25,14 @@ const textFormGroup = function TextFormGroup(props: FormGroupProps): JSX.Element
                 value={props.value}
                 placeholder={props.placeholder}
                 onChange={onChange}
-                isValid={props.isValid ? undefined : false}
+                isInvalid={props.isInvalid}
             /> :
             <Form.Control
                 type="text"
                 value={props.value}
                 placeholder={props.placeholder}
                 onChange={onChange}
-                isValid={props.isValid ? undefined : false}
+                isInvalid={props.isInvalid}
             />
     , [props]);
 

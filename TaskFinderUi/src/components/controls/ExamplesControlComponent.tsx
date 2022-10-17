@@ -5,9 +5,11 @@ import { X } from 'react-bootstrap-icons';
 import LocalizationService from '../../helpers/localizationService';
 import { NewExample } from '../../models/Example';
 
+import './ExamplesControlComponent.scss';
+
 interface ExamplesControlProps {
     values: NewExample[];
-    isValid: boolean;
+    areExamplesInvalid: boolean[];
     onChange: (values: NewExample[]) => void;
 }
 
@@ -48,44 +50,50 @@ export default function ExamplesControl(props: ExamplesControlProps): JSX.Elemen
     }, [props]);
 
     const onRemoveExample = React.useCallback((index: number) => {
-        const filtered = props.values.splice(index, 1);
-        props.onChange(filtered);
+        const examples = props.values;
+        examples.splice(index, 1);
+        props.onChange(examples);
     }, [props]);
 
+    const [expandedPart, setExpandedPart] = React.useState<ExamplePart | null>(null);
+    const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
+
     const example = (example: NewExample, index: number): JSX.Element => (
-        <Form.Group className="mb-3" key={index}>
-            <InputGroup hasValidation>
-                <InputGroup.Text>{`${LocalizationService.example} ${index + 1}:`}</InputGroup.Text>
-                <Form.Control
-                    type="text"
-                    value={example.inputText}
-                    placeholder={LocalizationService.exampleInputPlaceholder}
-                    isValid={props.isValid ? undefined : false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Input)}
-                />
-                <Form.Control
-                    type="text"
-                    value={example.outputText}
-                    placeholder={LocalizationService.exampleOutputPlaceholder}
-                    isValid={props.isValid ? undefined : false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Output)}
-                />
-                <Form.Control
-                    type="text"
-                    disabled={true} // Remove when Explanation will be available
-                    value={example.explanation}
-                    placeholder={LocalizationService.exampleExplanationPlaceholder}
-                    isValid={props.isValid ? undefined : false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, ExamplePart.Explanation)}
-                />
-                <Button variant={index === 0 ? 'outline-secondary' : 'outline-danger'}
-                    disabled={index === 0}
-                    onClick={() => onRemoveExample(index)}>
-                    {<X />}
-                </Button>
-            </InputGroup>
-        </Form.Group>
+        <Form.Group className="mb-3 example-row" key={index}>
+            <InputGroup.Text className="me-2">{`${LocalizationService.example} ${index + 1}:`}</InputGroup.Text>
+            {getControl(ExamplePart.Input, index, example.inputText, LocalizationService.exampleInputPlaceholder)}
+            {getControl(ExamplePart.Output, index, example.outputText, LocalizationService.exampleOutputPlaceholder)}
+            {getControl(ExamplePart.Explanation, index, example.explanation, LocalizationService.exampleExplanationPlaceholder)}
+            <Button variant={index === 0 ? 'outline-secondary' : 'outline-danger'}
+                disabled={index === 0}
+                onClick={() => onRemoveExample(index)}>
+                {<X />}
+            </Button>
+        </Form.Group >
     );
+
+    const getControl = (part: ExamplePart, index: number, text: string | undefined, placeholder: string) => {
+        return (
+            <Form.Control className={`me-2 example-row__field ${getControlClass(part, index)}`}
+                type="text"
+                value={text}
+                placeholder={placeholder}
+                isInvalid={part == ExamplePart.Explanation ? false : !!props.areExamplesInvalid[index]}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, index, part)}
+                onFocus={() => setExpanded(part, index)}
+                onBlur={() => setExpanded(null, null)}
+            />
+        );
+    };
+
+    const getControlClass = (part: ExamplePart, index: number): string => {
+        return activeIndex === index && expandedPart === part ? 'example-row__field_active' : '';
+    };
+
+    const setExpanded = (part: ExamplePart | null, index: number | null) => {
+        setExpandedPart(part);
+        setActiveIndex(index);
+    };
 
     return (<>
         {props.values.map((x, i) => example(x, i))}

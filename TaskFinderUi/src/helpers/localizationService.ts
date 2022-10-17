@@ -6,7 +6,7 @@ export default class LocalizationService {
     public static loading = 'Loading...';
 
     public static add = 'Save task';
-    public static close = 'Close';
+    public static discardAndClose = 'Discard and close';
     public static nameField = 'Name';
     public static description = 'Description';
     public static examples = 'Examples';

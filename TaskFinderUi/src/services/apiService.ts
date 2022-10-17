@@ -15,33 +15,15 @@ export default class ApiService {
         console.error(LocalizationService.loadingError);
     }
 
-    public get<T>(action: string, success: (result: T) => void, params?: URLSearchParams, fail: () => void = this.defaultFail): void {
-        const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
-        fetch(url)
-            .then(res => res.json())
-            .then(
-                (result: T) => success(result),
-                (error) => {
-                    console.error(error);
-                    fail();
-                }
-            );
+    public async get<T>(action: string, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | T> {
+        return this.getAsyncInternal<T>((res: Response) => res.json(), action, params, fail);
     }
 
-    public async getAsync<T>(action: string, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | T> {
-        const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
-        return fetch(url)
-            .then(res => res.json())
-            .then(
-                (result: T) => result,
-                (error) => {
-                    console.error(error);
-                    fail();
-                }
-            );
+    public async getResponsless(action: string, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | boolean> {
+        return this.getAsyncInternal<boolean>((res: Response) => res.ok, action, params, fail);
     }
 
-    public async postAsync<TRequest, TResponse>(action: string, data: TRequest, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | TResponse> {
+    public async post<TRequest, TResponse>(action: string, data: TRequest, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | TResponse> {
         const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
         const request = {
             method: 'POST',
@@ -54,6 +36,19 @@ export default class ApiService {
             .then(res => res.ok ? res.json() : {} as TResponse)
             .then(
                 (result: TResponse) => result,
+                (error) => {
+                    console.error(error);
+                    fail();
+                }
+            );
+    }
+
+    private async getAsyncInternal<T>(responseCallback: (res: Response) => any, action: string, params?: URLSearchParams, fail: () => void = this.defaultFail): Promise<void | T> {
+        const url = this.baseUrl + RemoveTrailingSlash(action) + (params !== undefined ? `?${params}` : '');
+        return fetch(url)
+            .then(res => responseCallback(res))
+            .then(
+                (result: T) => result,
                 (error) => {
                     console.error(error);
                     fail();

@@ -5,10 +5,10 @@ import LocalizationService from '../../helpers/localizationService';
 import Task from '../../models/Task';
 import TaskLite from '../../models/TaskLite';
 import TaskService from '../../services/taskService';
-import Examples from './ExamplesComponent';
+import Examples from './examples/ExamplesComponent';
+import Loader from '../loader/LoaderComponent';
 
 import './DetailedTaskComponent.scss';
-import Loader from '../loader/LoaderComponent';
 
 interface DetailedTaskProps {
     task: TaskLite;
