@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TaskFinder.BusinessLogic.Models
+﻿namespace TaskFinder.BusinessLogic.Models
 {
     public class Example
     {
@@ -13,7 +11,5 @@ namespace TaskFinder.BusinessLogic.Models
         public string OutputText { get; set; }
 
         public int TaskId { get; set; }
-
-        public virtual Task Task { get; set; }
     }
 }

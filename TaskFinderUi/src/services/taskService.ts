@@ -3,6 +3,7 @@ import PathService from '../helpers/pathService';
 import TaskLite from '../models/TaskLite';
 import Task from '../models/Task';
 import Filter from '../models/Filter';
+import { TaskCreationResult } from '../models/TaskCreationResult';
 
 export default class TaskService {
     private apiService: ApiService;
@@ -11,28 +12,32 @@ export default class TaskService {
         this.apiService = new ApiService(PathService.taskController);
     }
 
+    public async getTaskCount(): Promise<number | null> {
+        const count = await this.apiService.get<number>(PathService.getTaskCount) || 0;
+
+        return Promise.resolve(count);
+    }
+
     public async getTasks(filter: Filter): Promise<TaskLite[] | null> {
         const params = new URLSearchParams({
             take: filter.take.toString(),
             skip: filter.skip.toString()
         });
-        //return await this.apiService.getAsync<TaskLite[]>(PathService.getTasks, params) || null;
 
-        return Promise.resolve([
-            { Id: 0, Name: 'Task1', Description: 'Description 1' },
-            { Id: 1, Name: 'Task2', Description: 'Description 2' },
-            { Id: 2, Name: 'Task3', Description: 'Description 3' },
-            { Id: 3, Name: 'Task4', Description: 'Description 4' },
-            { Id: 4, Name: 'Task5', Description: 'Description 5' }
-        ]);
+        return await this.apiService.get<TaskLite[]>(PathService.getTasks, params) || [];
     }
 
-    public async getTask(taskId: number): Promise<Task | null> {
-        const params = new URLSearchParams({ taskId: taskId.toString() });
-        return await this.apiService.getAsync<Task>(PathService.getTask, params) || null;
+    public async getTask(id: number): Promise<Task | null> {
+        const params = new URLSearchParams({ id: id.toString() });
+        return await this.apiService.get<Task>(PathService.getTask, params) || null;
     }
 
-    public async addTasks(data: Task): Promise<number | null> {
-        return await this.apiService.postAsync<Task, number>(PathService.addTasks, data) || null;
+    public async addTasks(data: Task): Promise<TaskCreationResult | null> {
+        return await this.apiService.post<Task, TaskCreationResult>(PathService.addTasks, data) || null;
+    }
+
+    public async removeTask(id: number): Promise<boolean> {
+        const params = new URLSearchParams({ id: id.toString() });
+        return await this.apiService.getResponsless(PathService.removeTask, params) || false;
     }
 }

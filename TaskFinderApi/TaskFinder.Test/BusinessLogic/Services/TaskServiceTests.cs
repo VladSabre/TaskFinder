@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NUnit.Framework;
+using System.Collections.Generic;
 using TaskFinder.BusinessLogic.Mappings;
 using TaskFinder.BusinessLogic.Models;
 using TaskFinder.BusinessLogic.Services;
@@ -27,6 +28,16 @@ namespace TaskFinder.Test.BusinessLogic.Services
         }
 
         [Test]
+        public void GetTaskCount_Success()
+        {
+            // Act
+            var result = _service.GetTaskCount();
+
+            // Assert
+            Assert.AreEqual(5, result);
+        }
+
+        [Test]
         public void GetTasks_Success()
         {
             // Arrange
@@ -45,15 +56,14 @@ namespace TaskFinder.Test.BusinessLogic.Services
             Assert.AreEqual(TestData.Task1.Id, result[1].Id);
         }
 
-        [TestCase(0, 3)]
-        [TestCase(2, 10)]
-        public void GetTasks_UnexpectedFilters_NoTasksReturned(int take, int skip)
+        [Test]
+        public void GetTasks_UnexpectedFilters_NoTasksReturned()
         {
             // Arrange
             var filter = new Filter
             {
-                Take = take,
-                Skip = skip
+                Take = 2,
+                Skip = 10
             };
 
             // Act
@@ -74,6 +84,23 @@ namespace TaskFinder.Test.BusinessLogic.Services
         }
 
         [Test]
+        public void GetTasks_TakeSkipAreZero_AllTasksReturned()
+        {
+            // Arrange
+            var filter = new Filter
+            {
+                Take = 0,
+                Skip = 0
+            };
+
+            // Act
+            var result = _service.GetTasks(filter);
+
+            // Assert
+            Assert.AreEqual(5, result.Count);
+        }
+
+        [Test]
         public void GetTask_ExpectedId_Success()
         {
             // Act
@@ -82,6 +109,8 @@ namespace TaskFinder.Test.BusinessLogic.Services
             // Assert
             Assert.AreEqual(TestData.Task3.Id, result.Id);
             Assert.AreEqual(TestData.Task3.Name, result.Name);
+            Assert.AreEqual(TestData.Task3Examples.Count, result.Examples.Count);
+            Assert.AreEqual(TestData.Task3Examples[0].InputText, result.Examples[0].InputText);
         }
 
         [Test]
@@ -94,7 +123,7 @@ namespace TaskFinder.Test.BusinessLogic.Services
             Assert.IsNull(result);
         }
 
-        [Test]
+        [Test, Order(1)]
         public void AddTask_Success()
         {
             // Arrange
@@ -102,13 +131,28 @@ namespace TaskFinder.Test.BusinessLogic.Services
             {
                 Name = "Name1",
                 Description = "Description1",
+                Examples = new List<Example> 
+                {
+                    new Example { Index = 0, InputText = "Input", OutputText = "Output" }
+                },
+                Code = "Console.Write(\"Hello World\")"
             };
             
             // Act
             var result = _service.AddTask(task);
 
             // Assert
-            Assert.AreEqual(TestData.Task5.Id + 1, result);
+            Assert.AreEqual(TestData.Task5.Id + 1, result.Id);
+        }
+
+        [Test, Order(2)]
+        public void RemoveTask_Success()
+        {
+            // Act 
+            var result = _service.RemoveTask(TestData.Task5.Id + 1);
+
+            // Assert
+            Assert.IsTrue(result);
         }
     }
 }

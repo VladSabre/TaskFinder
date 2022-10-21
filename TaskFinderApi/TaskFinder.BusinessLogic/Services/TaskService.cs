@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using TaskFinder.BusinessLogic.Models;
@@ -19,6 +20,11 @@ namespace TaskFinder.BusinessLogic.Services
             _mapper = mapper;
         }
 
+        public int GetTaskCount()
+        {
+            return _context.Tasks.Count();
+        }
+
         public List<TaskLite> GetTasks(Filter filter)
         {
             var tasks = _context.Tasks
@@ -33,44 +39,59 @@ namespace TaskFinder.BusinessLogic.Services
 
         public Task GetTask(int id)
         {
-            var task = _context.Tasks.Find(id);
+            var task = _context.Tasks
+                .Include(x => x.Examples)
+                .SingleOrDefault(x => x.Id == id);
 
             return _mapper.Map<Task>(task);
         }
 
-        public (int?, Dictionary<string, string>) AddTask(Task task)
+        public TaskCreationResult AddTask(Task task)
         {
             var mappedTask = _mapper.Map<DataAccess.Models.Task>(task);
 
-            var errorMessages = ValidateTask(task);
+            var result = new TaskCreationResult(ValidateTask(task));
 
-            if (errorMessages.Any())
-                return (null, errorMessages);
+            if (result.ValidationResult.Any())
+                return result;
 
             _context.Tasks.Add(mappedTask);
             _context.SaveChanges();
 
-            return (mappedTask.Id, errorMessages);
+            return new TaskCreationResult(mappedTask.Id);
         }
 
-        private Dictionary<string, string> ValidateTask(Task task)
+        public bool RemoveTask(int id)
         {
-            var messages = new Dictionary<string, string>();
+            var task = _context.Tasks.Find(id);
 
             if (task == null)
-                messages.Add(nameof(ValidationMessages.TaskIsEmpty), ValidationMessages.TaskIsEmpty);
+                return false;
+
+            _context.Tasks.Remove(task);
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        private Dictionary<ValidationCode, string> ValidateTask(Task task)
+        {
+            var messages = new Dictionary<ValidationCode, string>();
+
+            if (task == null)
+                messages.Add(ValidationCode.TaskIsEmpty, ValidationMessages.TaskIsEmpty);
             else if (string.IsNullOrWhiteSpace(task.Name))
-                messages.Add(nameof(ValidationMessages.NameIsEmpty), ValidationMessages.NameIsEmpty);
+                messages.Add(ValidationCode.NameIsEmpty, ValidationMessages.NameIsEmpty);
             else if (_context.Tasks.Any(x => x.Name == task.Name))
-                messages.Add(nameof(ValidationMessages.NameAlreadyExists), ValidationMessages.NameAlreadyExists);
+                messages.Add(ValidationCode.NameAlreadyExists, ValidationMessages.NameAlreadyExists);
             if (string.IsNullOrWhiteSpace(task.Description))
-                messages.Add(nameof(ValidationMessages.DescriptionIsEmpty), ValidationMessages.DescriptionIsEmpty);
-            if (task.Examples.Count == 0)
-                messages.Add(nameof(ValidationMessages.NoExamples), ValidationMessages.NoExamples);
+                messages.Add(ValidationCode.DescriptionIsEmpty, ValidationMessages.DescriptionIsEmpty);
+            if (task.Examples == null || !task.Examples.Any())
+                messages.Add(ValidationCode.NoExamples, ValidationMessages.NoExamples);
             else if (task.Examples.Any(x => string.IsNullOrWhiteSpace(x.InputText) || string.IsNullOrWhiteSpace(x.OutputText)))
-                messages.Add(nameof(ValidationMessages.NotValidExample), ValidationMessages.NotValidExample);
+                messages.Add(ValidationCode.NotValidExample, ValidationMessages.NotValidExample);
             if (string.IsNullOrWhiteSpace(task.Code))
-                messages.Add(nameof(ValidationMessages.CodeIsEmpty), ValidationMessages.CodeIsEmpty);
+                messages.Add(ValidationCode.CodeIsEmpty, ValidationMessages.CodeIsEmpty);
 
             return messages;
         }

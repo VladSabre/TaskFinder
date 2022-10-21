@@ -1,30 +1,38 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 
-interface ForGroupProps {
+interface FormGroupProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
     useTextArea?: boolean;
+    isInvalid: boolean;
 }
 
-export default function TextFormGroup(props: ForGroupProps): JSX.Element {
+const defaultProps = {
+    isValid: true,
+};
+
+const textFormGroup = function TextFormGroup(props: FormGroupProps): JSX.Element {
     const onChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => props.onChange(e.target.value), [props]);
 
     const renderControl = React.useCallback(() =>
         props.useTextArea ?
             <Form.Control
                 as="textarea"
+                rows={6}
                 value={props.value}
                 placeholder={props.placeholder}
                 onChange={onChange}
+                isInvalid={props.isInvalid}
             /> :
             <Form.Control
                 type="text"
                 value={props.value}
                 placeholder={props.placeholder}
                 onChange={onChange}
+                isInvalid={props.isInvalid}
             />
     , [props]);
 
@@ -34,4 +42,8 @@ export default function TextFormGroup(props: ForGroupProps): JSX.Element {
             {renderControl()}
         </Form.Group>
     );
-}
+};
+
+textFormGroup.defaultProps = defaultProps;
+
+export default textFormGroup;

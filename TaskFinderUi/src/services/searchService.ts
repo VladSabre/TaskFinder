@@ -11,6 +11,6 @@ export default class SearchService {
 
     public async getTasks(query: string): Promise<TaskLite[] | null> {
         const params = new URLSearchParams({ query });
-        return await this.apiService.getAsync<TaskLite[]>(PathService.getTasks, params) || null;
+        return await this.apiService.get<TaskLite[]>(PathService.getTasks, params) || null;
     }
 }

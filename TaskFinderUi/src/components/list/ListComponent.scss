@@ -2,3 +2,20 @@
     display: flex;
     justify-content: space-between;
 }
+
+.list-item {
+    height: 98px;//123px;
+    display: flex;
+    flex-direction: row;
+
+    &__header-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__description {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

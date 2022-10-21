@@ -6,7 +6,7 @@ using TaskFinder.BusinessLogic.Services.Interfaces;
 
 namespace TaskFinder.Api.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("[controller]")]
     [ApiController]
     public class SearchController : ControllerBase
     {

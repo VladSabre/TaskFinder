@@ -1,0 +1,18 @@
+.example-row {
+    display: flex;
+    flex-direction: row;
+
+    &__field {
+        flex-shrink: 1;
+        flex-basis: 0;
+        flex-grow: 1;
+
+        &_active {
+            flex-grow: 4;
+        }
+    }
+
+    & &__field {
+        transition: flex-grow 0.3s, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+}
